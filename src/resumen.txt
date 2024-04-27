@@ -1,0 +1,202 @@
+INSTALACION TypeORM
+
+Para trabajar con Bases de Datos nos vamos a ayudar de Docker y Docker Compose y sobre todo de TypeORM, que es on ORM para JS/TypeScript y compatible totalmente con Nest.js y nos implementa el patrón Repository.
+
+Lo primero es instalar su módulo y las dependencias a TypeORM y a cada uno de los SGDB que usemos, por ejemplo, para PostgreSQL:
+
+npm install --save @nestjs/typeorm typeorm pg
+
+Para sql
+npm i --save typeorm mysql2
+
+CONFIGURACION DE LA CONEXION EN APP.MODULE
+
+@Module({
+  imports: [
+    UsersModule,
+    ProductsModule,
+    // Configuración de la conexión a la base de datos 
+    TypeOrmModule.forRoot({
+      type: 'sql', // Tipo de base de datos
+      host: 'localhost', // Dirección del servidor
+      port: 3006, // Puerto del servidor
+      username: 'root', // Nombre de usuario
+      password: 'root', // Contraseña de usuario
+      database: 'NEST_DB', // Nombre de la base de datos
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+       // Entidades de la base de datos (buscar archivos con extensión .entity.ts o .entity.js)
+      // tambien se puede importar directamenta la entidad. Esto es útil cuando solo hemos
+      //realizado cambio en algunas de ellas. 
+      synchronize: true, 
+      // Sincronizar la base de datos
+      //se recomienda colocar false hasta elaborar las entidades. a medida que se va trabajando
+      // cambiar a true
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+
+CREACION DE LA DB EN WORKBENCH
+
+Abrir un script nuevo y crear la db, luego usarla
+
+CREATE DATABASE nest_db;
+USE nest_db;
+
+//esto permitira ver los datos cargados a la db. 
+
+---------------------
+CREACION DE Entidades
+---------------------
+
+Debemos crear las entidades de datos, que son las clases que representan las tablas de la base de datos en base a anotaciones de TypeORM cons sus opciones si no queremos que tomen las opciones por defecto.
+ Por ejemplo, para un usuario: Users 
+
+ nest g resousce Users
+
+ // creara el modulo completo incluyendo dto  y entity
+
+ nest g co Users ---> crea el controllers
+ nest g s Users ---> crea el servidor
+ nest g mo Users ---> crea el modulo 
+
+ // Ver modulo Users
+
+
+ ---------------------------
+        RELACIONES
+ ---------------------------
+Podemos usar las anotaciones de TypeORM para definir las relaciones entre tablas. Estas aceptan un callback de configuración de cada realacion Entre ellas tenemos las siguientes:
+
+OneToOne
+OneToMany
+ManyToMany
+De nuevo es interesante tener en cuenta la bidireccionalidad de las mimas.
+
+``En TypeORM, para establecer relaciones entre entidades utilizando el framework Nest, se pueden utilizar decoradores como @ManyToOne, `@OneToMany`, `@ManyToMany`, entre otros. En el caso específico que mencionaste, donde un producto tiene una categoría y una categoría tiene muchos productos, puedes definir las relaciones de la siguiente manera:
+
+Primero, vamos a crear la entidad "Categoría":
+// VER MODULO CATEGORIAS
+
+Segundo creamos el modulo producto y cramos la entidad
+
+//VER MODULO PRODUCTOS
+
+entidad categoria
+@OneToMany(() => Producto, (producto) => producto.categoria)
+productos: Producto[];
+
+La FK se establece en la relación @OneToMany con la entidad Producto. 
+En la declaración @OneToMany(() => Producto, (producto) => producto.categoria),
+la segunda función flecha (producto) => producto.categoria indica que la columna que 
+establece la relación de clave externa en la tabla Producto hacia la tabla Categoria
+es categoria. Por lo tanto, categoria en la tabla Producto es una FK que hace referencia
+a la tabla Categoria.
+
+entidad productos
+ @ManyToMany(()=> Categoria, (categoria)=> categoria.productos)
+@JoinColumn({name:'categoria_id'})
+categoria: Categoria;
+
+En la entidad Producto, la FK se especifica con la anotación
+@JoinColumn({ name: 'categoria_id' }), que indica que la columna categoria_id en 
+la tabla Producto es la clave externa que establece la relación con la tabla Categoria.
+Por lo tanto, categoria_id en la tabla Producto es la FK que referencia la tabla Categoria.
+-------------------------------------------------------------------------------------------
+La columna categoria_id en la tabla Producto contendrá los valores que establecen la 
+relación entre la tabla Producto y la tabla Categoria. Cada fila en la tabla Producto 
+tendrá un valor en la columna categoria_id que corresponde al id de la fila
+correspondiente en la tabla Categoria, indicando así a qué categoría pertenece el producto.
+Esta relación permite la consulta y recuperación de productos relacionados con sus 
+respectivas categorías.
+-------------------------------------------------------------------------------------------
+
+@JoinColumn:
+
+Se utiliza en relaciones uno a uno y muchos a uno, donde una de las entidades tiene una clave externa 
+(FK) que apunta a la otra entidad.
+Es apropiado cuando deseas que la FK esté en una de las entidades, en lugar de crear una 
+tabla de unión separada.
+Útil cuando hay una relación directa entre dos entidades y no necesitas ninguna tabla 
+de unión adicional.
+@JoinTable:
+
+Se utiliza principalmente en relaciones muchos a muchos, donde ambas entidades pueden tener múltiples instancias de la otra entidad.
+Es apropiado cuando la relación entre dos entidades es compleja y necesita ser modelada a través de una tabla de unión explícita.
+Útil cuando deseas agregar atributos adicionales a la relación entre las dos entidades (por ejemplo, una fecha de inicio/fin para una asociación entre dos entidades).
+
+--------------------------
+      CASCADA
+--------------------------
+
+onDelete Y OnUpdate
+
+Para implementar la cascada en las relaciones entre entidades en TypeORM, puedes utilizar el decorador @OneToMany o @ManyToOne en conjunto con la opción cascade para especificar las acciones que deseas realizar en cascada.
+
+Por ejemplo, si deseas que al eliminar una categoría se eliminen automáticamente todos los productos asociados, puedes configurar la cascada de la siguiente manera:
+
+En la entidad Categoria:
+
+@OneToMany(() => Producto, (producto) => producto.categoria, { cascade: true })
+productos: Producto[];
+En la entidad Producto:
+
+@ManyToOne(() => Categoria, (categoria) => categoria.productos, { onDelete: 'CASCADE' })
+@JoinColumn({ name: 'categoria_id' })
+categoria: Categoria;
+En este ejemplo, se utiliza la opción cascade en @OneToMany para especificar que las 
+acciones de eliminación en cascada se deben aplicar a la relación. 
+Al establecer { cascade: true }, cuando se elimina una categoría, 
+se eliminarán automáticamente todos los productos relacionados.
+
+Adicionalmente, también se utiliza { onDelete: 'CASCADE' } en @ManyToOne para indicar 
+que cuando se elimine una categoría, se deben eliminar automáticamente los productos 
+asociados a dicha categoría.
+
+Las relaciones deben establecerse en los metodos get y getById
+let criterio:FindManyOptions = {relations: ['profesor','escuela']}//find(criterio)
+
+let criterio: FindOneOptions = {relations:['clases'], where: {idEstudiante:id}}//findOne(criterio)
+
+----------------------
+    REPOSITORIOS
+----------------------
+
+Para usar el repositorio de la entidad que quieras debes importarlo a tu módulo:
+
+  import { TypeOrmModule } from '@nestjs/typeorm';
+
+  @Module({
+    imports: [
+      TypeOrmModule.forFeature([User]),
+    ],
+  })
+  export class UsersModule {}
+
+Un Repository es una característica de TypeORM que proporciona métodos para interactuar 
+con una entidad específica en la base de datos.
+
+En tu constructor, estás utilizando la inyección de dependencias de Angular 
+(@InjectRepository(User)) para obtener una instancia del repositorio asociado a la 
+entidad User. Esto significa que estás solicitando a Angular que te proporcione una 
+instancia del Repository para la entidad User que ya ha sido configurada con las 
+operaciones CRUD (Create, Read, Update, Delete) necesarias para interactuar con la tabla
+de usuarios en la base de datos.
+
+Una vez que tienes esta instancia de Repository<User>, puedes utilizar los métodos 
+proporcionados por TypeORM para realizar operaciones como guardar (save), 
+buscar (find, findOne), actualizar (update), eliminar (remove), etc., en la 
+tabla de usuarios.
+
+Aquí hay una comparación entre los métodos del Repository y las operaciones SQL correspondientes:
+
+save: Similar a INSERT, para crear nuevos registros o actualizar registros existentes.
+remove: Similar a DELETE, para eliminar registros.
+findOne y find: Similar a SELECT, para recuperar uno o varios registros que cumplen 
+ciertos criterios.
+update: Similar a UPDATE, para actualizar registros existentes.
+
+Además de estos métodos básicos, el Repository también proporciona opciones adicionales 
+para personalizar y refinar tus consultas, como where, order, take, skip, etc.
