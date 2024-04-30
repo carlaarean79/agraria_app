@@ -12,7 +12,7 @@ export class Producto {
     name:string
 
     @Column({length:250})
-    description:string
+    descripcion:string
 
     @Column()
     img:string
@@ -33,7 +33,7 @@ export class Producto {
 
     constructor(name:string,descripcion:string,img:string,price:number){
         this.name=name;
-        this.description=descripcion;
+        this.descripcion=descripcion;
         this.img=img;
         this.price=price;
     }

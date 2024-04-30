@@ -2,12 +2,12 @@ import { IsString } from "class-validator"
 import { Categoria } from "src/categoria/entities/categoria.entity"
 import { Entorno } from "src/entorno/entities/entorno.entity"
 
-export class CreateProductoDto {
+export class ProductoDto {
     @IsString()
     name:string
 
     @IsString()
-    description:string
+    descripcion:string
 
     @IsString()
     img:string
