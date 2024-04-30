@@ -6,7 +6,7 @@ import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class PedidoProductoService {
-  constructor(InjectRepository(PedidoProducto) private readonly pediProdRepository:Repository<PedidoProducto>){}
+  constructor(@InjectRepository(PedidoProducto) private readonly pediProdRepository:Repository<PedidoProducto>){}
 
   async create(datos: PedidoProductoDto):Promise<PedidoProducto> {
    /*  const existeProducto = await this.pediProdRepository.findOne({where:{pedido: datos.pedido}});
