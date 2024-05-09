@@ -14,6 +14,10 @@ import { Categoria } from './categoria/entities/categoria.entity';
 import { Producto } from './producto/entities/producto.entity';
 import { EntornoModule } from './entorno/entorno.module';
 import { Entorno } from './entorno/entities/entorno.entity';
+import { UploadService } from './upload/upload.service';
+import { UploadController } from './upload/upload.controller';
+import { UploadModule } from './upload/upload.module';
+
 
 
 
@@ -27,9 +31,10 @@ import { Entorno } from './entorno/entities/entorno.entity';
     username: 'root',
     password: 'root',
     database: 'agraria',
+    ssl: true,
     entities: [Entorno,User,Producto,Pedido,PedidoProducto,Categoria],//__dirname + "/entity/*{.js,.ts}"
     synchronize:true
-  }), UsersModule, CategoriaModule, ProductoModule, PedidoModule, PedidoProductoModule, EntornoModule,
+  }), UsersModule, CategoriaModule, ProductoModule, PedidoModule, PedidoProductoModule, EntornoModule, UploadModule,
           
     ],
   controllers: [AppController],

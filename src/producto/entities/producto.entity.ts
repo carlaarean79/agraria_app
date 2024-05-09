@@ -14,8 +14,8 @@ export class Producto {
     @Column({length:250})
     descripcion:string
 
-    @Column()
-    img:string
+    @Column({ type: 'varchar', length: 255 }) 
+    imagen: string; 
 
     @Column()
     price:number
@@ -31,10 +31,10 @@ export class Producto {
     @OneToMany(()=> PedidoProducto, pedProd => pedProd.producto)
     pedidoProducto: PedidoProducto[];
 
-    constructor(name:string,descripcion:string,img:string,price:number){
+    constructor(name:string,descripcion:string,imagen:string,price:number){
         this.name=name;
         this.descripcion=descripcion;
-        this.img=img;
+        this.imagen=imagen;
         this.price=price;
     }
 }

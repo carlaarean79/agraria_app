@@ -9,8 +9,8 @@ export class ProductoDto {
     @IsString()
     descripcion:string
 
-    @IsString()
-    img:string
+    
+    imagen:any;
 
     @IsString()
     price:number

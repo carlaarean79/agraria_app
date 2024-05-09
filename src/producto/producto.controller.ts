@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, HttpCode, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus,
+ HttpCode, ParseIntPipe, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ProductoService } from './producto.service';
 import { ProductoDto } from './dto/create-producto.dto';
-import { UpdateProductoDto } from './dto/update-producto.dto';
 import { Producto } from './entities/producto.entity';
-import { FindOneOptions } from 'typeorm';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('producto')
 export class ProductoController {
@@ -11,17 +11,12 @@ export class ProductoController {
 
   @Post()
   @HttpCode(201)
-  async create(@Body() datos: ProductoDto):Promise<Producto>{
-    try{
-      return await this.productoService.create(datos);
-    }catch(error){
-      throw new HttpException({
-        status:HttpStatus.INTERNAL_SERVER_ERROR,
-        error: 'Se produjo un error al intentar crear el producto' +error.messaje,
-      },HttpStatus.INTERNAL_SERVER_ERROR)
-
-    }
-  }
+  @UseInterceptors(FileInterceptor("imagen"))
+  async create(@Body() datos: ProductoDto,@UploadedFile() imagen):Promise<Producto>{
+    console.log('soy imagen uploadFile controller',imagen);
+    
+          return await this.productoService.create(datos,imagen);
+     }
 
   @Get()
   @HttpCode(200)
