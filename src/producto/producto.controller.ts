@@ -11,11 +11,8 @@ export class ProductoController {
 
   @Post()
   @HttpCode(201)
-  @UseInterceptors(FileInterceptor("imagen"))
-  async create(@Body() datos: ProductoDto,@UploadedFile() imagen):Promise<Producto>{
-    console.log('soy imagen uploadFile controller',imagen);
-    
-          return await this.productoService.create(datos,imagen);
+  async create(@Body() datos: ProductoDto):Promise<Producto>{
+     return await this.productoService.create(datos);
      }
 
   @Get()

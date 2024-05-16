@@ -2,7 +2,7 @@ import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Producto } from "src/producto/entities/producto.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('pedido-producto')
+@Entity('pedidoproducto')
 export class PedidoProducto {
     @PrimaryGeneratedColumn()
     id:number;

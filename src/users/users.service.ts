@@ -1,12 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+
+  constructor(@InjectRepository(User) private readonly userRepository:Repository<User>){}
+  async create(datos: CreateUserDto):Promise<User> {
+    const existeUsuario = await this.userRepository.findOne({where:{email: datos.email}});
+     if(existeUsuario){
+       throw new HttpException(`El email ${datos.email} ya existe en la base de datos`,HttpStatus.CONFLICT);  
+      } 
+      try{
+        let usuario: User;
+        if(datos.email && datos.name && datos.lastname && datos.telephone ){
+          usuario= new User(datos.name, datos.lastname, datos.telephone, datos.email)
+         usuario = await this.userRepository.save(usuario);
+          return usuario;
+        } else {
+          throw new NotFoundException(`Algunos de los campos no está completo o
+           falta algún caracter. Compruebe los datos ingresados e intente nuevamente`);
+        }
+        
+      }catch(error){
+  throw new HttpException(`No se puedo crear el usuario ${datos.name} ${datos.lastname}, 
+  intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 
   findAll() {
     return `This action returns all users`;

@@ -5,29 +5,25 @@ import { Producto } from './entities/producto.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
-import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class ProductoService {
-constructor(@InjectRepository(Producto) private readonly productoRepository:Repository<Producto>,
-private readonly uploadService: UploadService){}
+constructor(@InjectRepository(Producto) private readonly productoRepository:Repository<Producto>){}
 
- async create(datos: ProductoDto, imagen):Promise<Producto> {
+ async create(datos: ProductoDto):Promise<Producto> {
    const existeProducto = await this.productoRepository.findOne({where:{name: datos.name}});
   /*  if(existeProducto){
      throw new HttpException(`El producto ${datos.name} ya existe en la base de datos`,HttpStatus.CONFLICT);  
     } */
     try{
-      const imagePath = await this.uploadService.saveImage(imagen);
-           
+                
       const nuevoProducto = new Producto(
         datos.name,
         datos.descripcion,
-        imagePath, // Pasa la ruta de la imagen al constructor
-        
-        datos.price,
+      datos.imagen, // Pasa la ruta de la imagen al constructor
+          datos.price,
       );
-      console.log('soy new img',imagePath);
+      console.log('soy new img');
   
       return await this.productoRepository.save(nuevoProducto);
             
