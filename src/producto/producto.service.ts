@@ -12,20 +12,19 @@ constructor(@InjectRepository(Producto) private readonly productoRepository:Repo
 
  async create(datos: ProductoDto):Promise<Producto> {
    const existeProducto = await this.productoRepository.findOne({where:{name: datos.name}});
-  /*  if(existeProducto){
+  if(existeProducto){
      throw new HttpException(`El producto ${datos.name} ya existe en la base de datos`,HttpStatus.CONFLICT);  
-    } */
+    } 
     try{
-                
-      const nuevoProducto = new Producto(
-        datos.name,
-        datos.descripcion,
-      datos.imagen, // Pasa la ruta de la imagen al constructor
-          datos.price,
-      );
-      console.log('soy new img');
-  
-      return await this.productoRepository.save(nuevoProducto);
+                let producto : Producto;
+                if(datos.name && datos.descripcion && datos.price && datos.categoria && datos.entorno){
+                  producto = new Producto(datos.name, datos.descripcion, datos.imagen, datos.price);
+                  producto = await this.productoRepository.save(producto);
+                  return producto;
+                } else {
+                  throw new NotFoundException(`No se proporcionaron los datos necesarios para crear el producto`);
+
+                }
             
     }catch(error){
 throw new HttpException(`No se puedo crear el producto ${datos.name}, intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -35,7 +34,7 @@ throw new HttpException(`No se puedo crear el producto ${datos.name}, intente nu
   async findAll():Promise<Producto[]> {
     try{
 
-      let criterio: FindManyOptions = {relations: []};
+      let criterio: FindManyOptions = {relations: ['pedido','entorno','categoria']};
       const producto= await this.productoRepository.find(criterio);
       if(producto) return producto;
       throw new Error(`El fichero Producto aún está vacío. Por favor, primero ingrese una nueva carga de datos`);

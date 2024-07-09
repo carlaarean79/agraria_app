@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UsersService {
 
   constructor(@InjectRepository(User) private readonly userRepository:Repository<User>){}
-  async create(datos: CreateUserDto):Promise<User> {
+  async create(datos: UserDto):Promise<User> {
     const existeUsuario = await this.userRepository.findOne({where:{email: datos.email}});
      if(existeUsuario){
        throw new HttpException(`El email ${datos.email} ya existe en la base de datos`,HttpStatus.CONFLICT);  
@@ -26,14 +26,22 @@ export class UsersService {
         }
         
       }catch(error){
-  throw new HttpException(`No se puedo crear el usuario ${datos.name} ${datos.lastname}, 
+  throw new HttpException(`No se pudo crear el usuario ${datos.name} ${datos.lastname}, 
   intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  /* async findAll():Promise<User[]> {
+    try{
+
+     }catch(error){
+  throw new HttpException(`No se encontró al usuario esepcificado, HttpStatus.INTERNAL_SERVER_ERROR`,
+  HttpStatus.INTERNAL_SERVER_ERROR
+  );
+      }
+
+    
+  } */
 
   findOne(id: number) {
     return `This action returns a #${id} user`;

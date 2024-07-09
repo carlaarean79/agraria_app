@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ import { Categoria } from './categoria/entities/categoria.entity';
 import { Producto } from './producto/entities/producto.entity';
 import { EntornoModule } from './entorno/entorno.module';
 import { Entorno } from './entorno/entities/entorno.entity';
-import { FormaPagoModule } from './forma-pago/forma-pago.module';
+import { UploadModule } from './upload/upload.module';
 
 
 
@@ -32,7 +32,9 @@ import { FormaPagoModule } from './forma-pago/forma-pago.module';
     ssl: true,
     entities: [Entorno,User,Producto,Pedido,PedidoProducto,Categoria],//__dirname + "/entity/*{.js,.ts}"
     synchronize:true
-  }), UsersModule, CategoriaModule, ProductoModule, PedidoModule, PedidoProductoModule, EntornoModule, FormaPagoModule          
+  }),
+
+   UsersModule, CategoriaModule, ProductoModule, PedidoModule, PedidoProductoModule, EntornoModule, UploadModule          
     ],
   controllers: [AppController],
   providers: [AppService],

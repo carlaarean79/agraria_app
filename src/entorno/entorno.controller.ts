@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
 import { EntornoService } from './entorno.service';
 import { CreateEntornoDto } from './dto/create-entorno.dto';
-import { UpdateEntornoDto } from './dto/update-entorno.dto';
+import { Categoria } from 'src/categoria/entities/categoria.entity';
+import { Entorno } from './entities/entorno.entity';
 
 @Controller('entorno')
 export class EntornoController {
   constructor(private readonly entornoService: EntornoService) {}
-
-  @Post()
-  create(@Body() createEntornoDto: CreateEntornoDto) {
-    return this.entornoService.create(createEntornoDto);
-  }
-
   @Get()
-  findAll() {
-    return this.entornoService.findAll();
+  @HttpCode(200)
+  async getEntorno() {
+    return this.entornoService.getEntorno();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.entornoService.findOne(+id);
+  @HttpCode(200)
+ async getCategoriaById(@Param('id', new ParseIntPipe({
+  errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE
+ })) id: number): Promise<Entorno> {
+    return  await this.entornoService.getEntornoById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEntornoDto: UpdateEntornoDto) {
-    return this.entornoService.update(+id, updateEntornoDto);
+  @Post()
+  @HttpCode(201)
+ async createCategoria(@Body() datos: CreateEntornoDto):Promise<Entorno> {
+    return await this.entornoService.createEntorno(datos);
+  }
+
+
+  @Put(':id')
+ async updateCategoria(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE
+   })) id: number, @Body() datos: CreateEntornoDto):Promise<Entorno> {
+    return this.entornoService.updateEntorno(id, datos);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.entornoService.remove(+id);
+  async removeCategoria(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
+     )) id: number):Promise<Boolean> {
+    return await this.entornoService.removeEntorno(id);
   }
 }

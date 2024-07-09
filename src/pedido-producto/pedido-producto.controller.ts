@@ -14,7 +14,7 @@ export class PedidoProductoController {
 
   @Get()
   @HttpCode(200)
-  async findAllPedidoProducto() {
+  async findAllPedidoProducto():Promise<PedidoProducto[]> {
         return await this.pedidoProductoService.findAll()
      }
 

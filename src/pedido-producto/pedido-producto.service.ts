@@ -9,10 +9,7 @@ export class PedidoProductoService {
   constructor(@InjectRepository(PedidoProducto) private readonly pediProdRepository:Repository<PedidoProducto>){}
 
   async create(datos: PedidoProductoDto):Promise<PedidoProducto> {
-   /*  const existeProducto = await this.pediProdRepository.findOne({where:{pedido: datos.pedido}});
-    if(existeProducto){
-      throw new HttpException(`El pedido de productos ${datos.pedido} ya existe en la base de datos`,HttpStatus.CONFLICT);  
-     } */
+  
      try{
        let pediProduc: PedidoProducto;
        if(datos.cantidad ){
@@ -23,7 +20,7 @@ export class PedidoProductoService {
          throw new NotFoundException(`Algunos de los campos no está completo o falta algún caracter. Compruebe los datos ingresados e intente nuevamente`);
        }
        
-     }catch(error){
+     } catch(error){
  throw new HttpException(`No se puedo crear el producto ${datos.pedido}, intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
      }
    }

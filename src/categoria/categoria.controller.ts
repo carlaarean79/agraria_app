@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
-import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+import { Categoria } from './entities/categoria.entity';
 
 @Controller('categoria')
 export class CategoriaController {
   constructor(private readonly categoriaService: CategoriaService) {}
-
-  @Post()
-  create(@Body() createCategoriaDto: CreateCategoriaDto) {
-    return this.categoriaService.create(createCategoriaDto);
-  }
-
   @Get()
-  findAll() {
-    return this.categoriaService.findAll();
+  @HttpCode(200)
+  async getCategorias(): Promise<Categoria[]> {
+    return await this.categoriaService.getCategorias();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriaService.findOne(+id);
+  @HttpCode(200)
+ async getCategoriaById(@Param('id', new ParseIntPipe({
+  errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE
+ })) id: number): Promise<Categoria> {
+    return  await this.categoriaService.getCategoriaById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoriaDto: UpdateCategoriaDto) {
-    return this.categoriaService.update(+id, updateCategoriaDto);
+  @Post()
+  @HttpCode(201)
+ async createCategoria(@Body() datos: CreateCategoriaDto):Promise<Categoria> {
+    return await this.categoriaService.createCategoria(datos);
+  }
+
+
+
+  @Put(':id')
+ async updateCategoria(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE
+   })) id: number, @Body() datos: CreateCategoriaDto):Promise<Categoria> {
+    return this.categoriaService.updateCategoria(id, datos);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriaService.remove(+id);
+  async removeCategoria(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
+     )) id: number):Promise<Boolean> {
+    return await this.categoriaService.removeCategoria(id);
   }
 }
