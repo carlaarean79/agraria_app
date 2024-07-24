@@ -1,96 +1,91 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { ProductoDto } from './dto/create-producto.dto';
-import { UpdateProductoDto } from './dto/update-producto.dto';
 import { Producto } from './entities/producto.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
-
 @Injectable()
 export class ProductoService {
-constructor(@InjectRepository(Producto) private readonly productoRepository:Repository<Producto>){}
+    constructor(@InjectRepository(Producto) private readonly productoRepository: Repository<Producto>) {}
 
- async create(datos: ProductoDto):Promise<Producto> {
-   const existeProducto = await this.productoRepository.findOne({where:{name: datos.name}});
-  if(existeProducto){
-     throw new HttpException(`El producto ${datos.name} ya existe en la base de datos`,HttpStatus.CONFLICT);  
-    } 
-    try{
-                let producto : Producto;
-                if(datos.name && datos.descripcion && datos.price && datos.categoria && datos.entorno){
-                  producto = new Producto(datos.name, datos.descripcion, datos.imagen, datos.price);
-                  producto = await this.productoRepository.save(producto);
-                  return producto;
-                } else {
-                  throw new NotFoundException(`No se proporcionaron los datos necesarios para crear el producto`);
-
-                }
-            
-    }catch(error){
-throw new HttpException(`No se puedo crear el producto ${datos.name}, intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
+    async create(datos: ProductoDto): Promise<Producto> {
+        try {
+            const nuevoProducto: Producto = await this.productoRepository.save(new Producto(
+                datos.name, datos.descripcion, datos.imagen, datos.price, datos.categoria, datos.entorno
+            ));
+            if (nuevoProducto) return nuevoProducto;
+            throw new NotFoundException(`No se pudo crear el producto con nombre ${datos.name}`);
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: `Error al intentar crear el producto de nombre ${datos.name} en la base de datos; ${error}`,
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
-  async findAll():Promise<Producto[]> {
-    try{
-
-      let criterio: FindManyOptions = {relations: ['pedido','entorno','categoria']};
-      const producto= await this.productoRepository.find(criterio);
-      if(producto) return producto;
-      throw new Error(`El fichero Producto aún está vacío. Por favor, primero ingrese una nueva carga de datos`);
-    } catch(error){
-      throw new HttpException({
-        status: HttpStatus.NOT_FOUND,
-        error:`Se produjo un error al intentar obtener los productos. Compruebe los datos ingresados e intente nuevamente`
-      }, HttpStatus.NOT_FOUND);
+    async findAll(): Promise<Producto[]> {
+        try {
+            let criterio: FindManyOptions = { relations: ['entorno', 'categoria'] };
+            const productos = await this.productoRepository.find(criterio);
+            if (productos) return productos;
+            throw new NotFoundException('No se encontraron productos en la base de datos');
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: `Error al intentar obtener los productos: ${error}`,
+            }, HttpStatus.NOT_FOUND);
+        }
     }
-  }
 
-  async findOne(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})
-)id: number):Promise<Producto>{
-  try{
-
-    let criterio: FindOneOptions = {relations:[], where:{id:id}};
-    const producto = await this.productoRepository.findOne(criterio);
-    if(producto) return producto;
-  }catch(error){
-    throw new HttpException({ status: HttpStatus.NOT_FOUND, error: `Se produjo un error al intentar obtener el producto con id ${id}. Compruebe los datos ingresados e intente nuevamente` },
-    HttpStatus.NOT_FOUND);
-}
-  }
-
- async updateProducto(id: number, datos:ProductoDto):Promise<Producto> {
-    try{
-let producto: Producto = await this.findOne(id);
-if(producto){
-  producto.name = datos.name;
-  producto.descripcion = datos.descripcion;
-  producto.imagen = datos.imagen;
-  producto.price = datos.price;
-  producto = await this.productoRepository.save(producto);
-  return producto;
-}
-    }catch(error){
-      throw new HttpException({ status: HttpStatus.NOT_FOUND,
-        error: `Error al intentar actualizar el producto de id: ${id} con el nombre ${datos.name} en la base de datos; ${error}`},
-        HttpStatus.NOT_FOUND);
-
+    async findOne(id: number): Promise<Producto> {
+        try {
+            let criterio: FindOneOptions = { relations: ['entorno', 'categoria'], where: { id: id } };
+            const producto = await this.productoRepository.findOne(criterio);
+            if (producto) return producto;
+            throw new NotFoundException(`No se encontró el producto con id ${id}`);
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: `Error al intentar obtener el producto con id ${id}: ${error}`,
+            }, HttpStatus.NOT_FOUND);
+        }
     }
-  }
 
-  async remove(id: number, datos:ProductoDto):Promise<string> {
-   try{
-    const removeProducto: Producto = await this.findOne(id);
-    if(!removeProducto) {
-      return `El producto que desea eliminar no existe en la base de datos`
-    } else{
-      await this.productoRepository.remove(removeProducto);
-      return `El producto ${removeProducto.name} ha sido eliminado correctamente de la base de edatos`
+    async update(id: number, datos: ProductoDto): Promise<Producto> {
+        try {
+            let producto: Producto = await this.findOne(id)
+            if (!producto) {
+                throw new NotFoundException(`No se encontró el producto con id ${id}`);
+            }
+            producto.name = datos.name;
+            producto.descripcion = datos.descripcion;
+            producto.imagen = datos.imagen;
+            producto.price = datos.price;
+            producto.categoria = datos.categoria;
+            producto.entorno = datos.entorno;
+
+            return await this.productoRepository.save(producto);
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: `Error al intentar actualizar el producto con id ${id}: ${error}`,
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-   }catch (error) {
-      throw new HttpException({ status: HttpStatus.NOT_FOUND,
-          error: `Error al intentar eliminar el producto  ${datos.name} en la base de datos; ${error}`},
-          HttpStatus.NOT_FOUND);
-      }
+
+    async remove(id: number): Promise<string> {
+        try {
+            const producto: Producto = await this.findOne(id);
+            if (!producto) {
+                throw new NotFoundException(`No se encontró el producto con id ${id}`);
+            }
+            await this.productoRepository.remove(producto);
+            return `El producto con id ${id} ha sido eliminado correctamente`;
+        } catch (error) {
+            throw new HttpException({
+                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                error: `Error al intentar eliminar el producto con id ${id}: ${error}`,
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

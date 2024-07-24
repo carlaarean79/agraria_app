@@ -14,16 +14,16 @@ export class UsersController {
     return this.usersService.create(UserDto);
   }
 
- /*  @Get()
+ /*   @Get()
   async findAll():Promise<User[]> {
     return  await this.usersService.findAll();
-  } */
+  } 
 
- /*  @Get(':id')
+  @Get(':id')
  async findOne(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
    )) id: number):Promise<User>{
     return  await this.usersService.findOne(id);
-  } */
+  }  */
 
   @Put(':id')
   async update(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}

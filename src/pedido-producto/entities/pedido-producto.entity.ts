@@ -1,24 +1,26 @@
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Producto } from "src/producto/entities/producto.entity";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('pedidoproducto')
 export class PedidoProducto {
     @PrimaryGeneratedColumn()
-    id:number;
+    id: number;
 
     @Column()
-    cantidad:number;
+    cantidad: number;
 
-    @ManyToOne(()=> Producto, produc=>produc.pedidoProducto)
-    @JoinColumn({name:"idProducto"})
-    producto:Producto;
+    @ManyToOne(() => Producto, producto => producto.pedidoProductos)
+    @JoinColumn({ name: "idProducto" })
+    producto: Producto;
 
-    @ManyToMany(()=> Pedido, pedido=>pedido.user)
-    @JoinColumn({name:"idPedido"})
-    pedido:Pedido;
+    @ManyToOne(() => Pedido, pedido => pedido.pedidosProducto)
+    @JoinColumn({ name: "idPedido" })
+    pedido: Pedido;
 
-    constructor(cantidad:number){
-        this.cantidad=cantidad
+    constructor(cantidad: number, producto: Producto, pedido: Pedido) {
+        this.cantidad = cantidad;
+        this.producto = producto;
+        this.pedido = pedido;
     }
 }

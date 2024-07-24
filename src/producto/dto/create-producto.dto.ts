@@ -1,21 +1,21 @@
-import { IsString } from "class-validator"
-import { Categoria } from "src/categoria/entities/categoria.entity"
-import { Entorno } from "src/entorno/entities/entorno.entity"
+import { IsNumber, IsString } from "class-validator";
+import { Categoria } from "src/categoria/entities/categoria.entity";
+import { Entorno } from "src/entorno/entities/entorno.entity";
 
 export class ProductoDto {
     @IsString()
-    name:string
+    name: string;
 
     @IsString()
-    descripcion:string
+    descripcion: string;
 
     @IsString()
-    imagen:string;
+    imagen: string;
 
-    @IsString()
-    price:number
+    @IsNumber()
+    price: number;
 
-    categoria:Categoria;
+    categoria: Categoria;
 
-    entorno:Entorno;
+    entorno: Entorno;
 }

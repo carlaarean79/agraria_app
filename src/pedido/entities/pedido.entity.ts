@@ -1,32 +1,28 @@
 import { PedidoProducto } from "src/pedido-producto/entities/pedido-producto.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('pedido')
 export class Pedido {
-    @PrimaryGeneratedColumn()
-    id:number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    cantidad:number
+  @Column({ type: 'timestamp' })  // Cambiado a 'timestamp'
+  fecha: Date;
 
-    @Column()
-    descripcion:string
+  @Column({ type: 'text' })  // Cambiado a 'text'
+  detalle: string;
 
-    @Column()
-    totalApagar:number
+  @OneToMany(() => PedidoProducto, pediProduct => pediProduct.pedido)
+  pedidosProducto: PedidoProducto[];
 
-      @OneToMany(()=> PedidoProducto, pediProduct=>pediProduct.pedido)
-    pedidosProducto:PedidoProducto[];
+  @ManyToMany(() => User, user => user.pedidos)
+  @JoinColumn({ name: "usuario_id" })
+  user: User;
 
-    @ManyToMany(()=> User, user=>user.pedidos)
-    @JoinColumn({name:"usuario_id"})
-    user:User;
-
-   constructor(cantidad:number,descripcion:string,totalApagar:number){
-    this.cantidad=cantidad;
-    this.descripcion=descripcion;
-    this.totalApagar =totalApagar
-   }
-   
+  constructor(fecha: Date, detalle: string, user: User) {
+    this.fecha = fecha;
+    this.detalle = detalle;
+    this.user = user;
+  }
 }

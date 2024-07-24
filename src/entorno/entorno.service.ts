@@ -82,7 +82,7 @@ export class EntornoService {
       }
   } catch (error) {
       throw new HttpException({ status: HttpStatus.NOT_FOUND,
-          error: `Error al intentar eliminar el categoria de id ${id} en la base de datos; ${error}`},
+          error: `Error al intentar eliminar el entorno de id ${id} en la base de datos; ${error}`},
           HttpStatus.NOT_FOUND);
   }
     }

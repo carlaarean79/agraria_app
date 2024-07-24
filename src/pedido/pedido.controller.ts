@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
 import { PedidoService } from './pedido.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
-import { UpdatePedidoDto } from './dto/update-pedido.dto';
+import { Pedido } from './entities/pedido.entity';
 
 @Controller('pedido')
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) {}
 
-  @Post()
-  create(@Body() createPedidoDto: CreatePedidoDto) {
-    return this.pedidoService.create(createPedidoDto);
-  }
 
   @Get()
-  findAll() {
-    return this.pedidoService.findAll();
+  @HttpCode(200)
+  async getPedido() {
+    return this.pedidoService.getPedido();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pedidoService.findOne(+id);
+  @HttpCode(200)
+ async getPedidoById(@Param('id', new ParseIntPipe({
+  errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE
+ })) id: number): Promise<Pedido> {
+    return  await this.pedidoService.getPedidoById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePedidoDto: UpdatePedidoDto) {
-    return this.pedidoService.update(+id, updatePedidoDto);
+  @Post()
+  @HttpCode(201)
+ async createPedido(@Body() datos: CreatePedidoDto):Promise<Pedido> {
+    return await this.pedidoService.createPedido(datos);
   }
+
+
+  @Put(':id')
+  async updatePedido(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE
+    })) id: number, @Body() datos: CreatePedidoDto):Promise<Pedido> {
+     return this.pedidoService.updatePedido(id, datos);
+   }
+
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pedidoService.remove(+id);
+  async removePedido(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
+     )) id: number):Promise<Boolean> {
+    return await this.pedidoService.removePedido(id);
   }
 }

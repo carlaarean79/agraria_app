@@ -1,12 +1,17 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreatePedidoDto {
-    @IsNumber()
-    cantidad:number;
-    
-    @IsString()
-    descripcion:string;
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)  // Usando 'class-transformer' para transformar la fecha
+  fecha: Date;
 
-    @IsNumber()
-    totalApagar:number
+  @IsString()
+  @IsNotEmpty()
+  detalle: string;
+
+  @IsNotEmpty()
+  user: User;
 }

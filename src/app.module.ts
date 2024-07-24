@@ -1,4 +1,4 @@
-import { Inject, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,28 +15,39 @@ import { Producto } from './producto/entities/producto.entity';
 import { EntornoModule } from './entorno/entorno.module';
 import { Entorno } from './entorno/entities/entorno.entity';
 import { UploadModule } from './upload/upload.module';
-
-
-
+import { NodemailerModule } from './nodemailer/nodemailer.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WhatsappSendModule } from './whatsapp-send/whatsapp-send.module';
 
 
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
-    type: 'cockroachdb',
-    host: 'cool-ferret-14700.7tt.aws-us-east-1.cockroachlabs.cloud',
-    port: 26257,
-    username: 'agraria',
-    password: 'x8Lu46JzUHXWez1YaUYpLA',
-    database: 'agraria',
-    ssl: true,
-    entities: [Entorno,User,Producto,Pedido,PedidoProducto,Categoria],//__dirname + "/entity/*{.js,.ts}"
-    synchronize:true
-  }),
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'cockroachdb',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        ssl: true,
+        entities: [Entorno, User, Producto, Pedido, PedidoProducto, Categoria],//__dirname + "/entity/*{.js,.ts}"
+        synchronize: true,
+      }),
+      inject: [ConfigService],
+    }),
 
-   UsersModule, CategoriaModule, ProductoModule, PedidoModule, PedidoProductoModule, EntornoModule, UploadModule          
-    ],
+    UsersModule, CategoriaModule,
+     ProductoModule, PedidoModule, 
+     PedidoProductoModule, EntornoModule, 
+     UploadModule, NodemailerModule, WhatsappSendModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
