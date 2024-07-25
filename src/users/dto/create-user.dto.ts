@@ -10,7 +10,7 @@ export class UserDto {
     
     @IsNotEmpty()
     @IsNumber()
-    telephone:number;
+    telphone:number;
 
     @IsNotEmpty()
     @IsEmail()

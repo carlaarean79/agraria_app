@@ -14,16 +14,18 @@ export class UsersController {
     return this.usersService.create(UserDto);
   }
 
- /*   @Get()
+  @Get()
+  @HttpCode(200)
   async findAll():Promise<User[]> {
     return  await this.usersService.findAll();
   } 
 
   @Get(':id')
+  @HttpCode(200)
  async findOne(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
    )) id: number):Promise<User>{
     return  await this.usersService.findOne(id);
-  }  */
+  } 
 
   @Put(':id')
   async update(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
@@ -32,6 +34,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @HttpCode(200)
  async  remove(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
   )) id: number) {
     return await this.usersService.remove(id);
