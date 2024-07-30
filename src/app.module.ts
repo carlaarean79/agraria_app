@@ -18,6 +18,7 @@ import { UploadModule } from './upload/upload.module';
 import { NodemailerModule } from './nodemailer/nodemailer.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WhatsappSendModule } from './whatsapp-send/whatsapp-send.module';
+import { Image } from './imagen/entities/imagen.entity';
 
 
 
@@ -36,7 +37,7 @@ import { WhatsappSendModule } from './whatsapp-send/whatsapp-send.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         ssl: true,
-        entities: [Entorno, User, Producto, Pedido, PedidoProducto, Categoria],//__dirname + "/entity/*{.js,.ts}"
+        entities: [Entorno, User, Producto, Pedido, PedidoProducto, Categoria, Image],//__dirname + "/entity/*{.js,.ts}"
         synchronize: true,
       }),
       inject: [ConfigService],

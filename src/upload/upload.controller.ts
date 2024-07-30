@@ -1,6 +1,7 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import { Image } from 'src/imagen/entities/imagen.entity';
 
 @Controller('upload')
 export class UploadController {
@@ -8,11 +9,16 @@ export class UploadController {
 
   @Post()
   @UseInterceptors(FileInterceptor('image')) // Asegúrate de usar el mismo nombre aquí
-  async uploadFile(@UploadedFile() image: Express.Multer.File) {
+  async uploadFile(@UploadedFile() image: Express.Multer.File): Promise<Image>{
     if (!image) {
       throw new Error('No file uploaded');
     }
-    const imageUrl = await this.uploadService.uploadImage(image);
-    return { imageUrl }; // Devolver la URL de la imagen en la respuesta
+    return await this.uploadService.uploadImage(image);
+  }
+
+
+  @Get()
+  async getImages(): Promise<Image[]> {
+    return this.uploadService.getImages();
   }
 }
