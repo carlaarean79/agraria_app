@@ -1,7 +1,7 @@
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('user')
+@Entity('usuario')
 export class User {
 @PrimaryGeneratedColumn()
     id:number

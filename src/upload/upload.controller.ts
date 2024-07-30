@@ -7,12 +7,12 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagen')) // Asegúrate de usar el mismo nombre aquí
-  async uploadFile(@UploadedFile() imagen: Express.Multer.File) {
-    if (!imagen) {
+  @UseInterceptors(FileInterceptor('image')) // Asegúrate de usar el mismo nombre aquí
+  async uploadFile(@UploadedFile() image: Express.Multer.File) {
+    if (!image) {
       throw new Error('No file uploaded');
     }
-    const imageUrl = await this.uploadService.uploadImage(imagen);
+    const imageUrl = await this.uploadService.uploadImage(image);
     return { imageUrl }; // Devolver la URL de la imagen en la respuesta
   }
 }

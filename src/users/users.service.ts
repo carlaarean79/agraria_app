@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { UserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { FindManyOptions, FindOneOptions, FindOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,16 +14,10 @@ export class UsersService {
       throw new HttpException(`El email ${datos.email} ya existe en la base de datos`, HttpStatus.CONFLICT);
     }
     try {
-      let usuario: User;
-      if (datos.email && datos.name && datos.lastname && datos.telphone) {
-        usuario = new User(datos.name, datos.lastname, datos.telphone, datos.email)
-        usuario = await this.userRepository.save(usuario);
-        return usuario;
-      } else {
-        throw new NotFoundException(`Algunos de los campos no está completo o
-           falta algún caracter. Compruebe los datos ingresados e intente nuevamente`);
-      }
-
+      const user: User = await this.userRepository.save
+        (new User(datos.name, datos.lastname, datos.telphone, datos.email))
+      if (user) return user;
+      throw new NotFoundException(`No se pudo crear el usuario ${datos.name}`)
     } catch (error) {
       throw new HttpException(`No se pudo crear el usuario ${datos.name} ${datos.lastname}, 
   intente nuevamente en unos segundos`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -33,8 +26,8 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     try {
-      const criterio: FindManyOptions = { relations: [] };
-      const users = await this.userRepository.find(criterio);
+      const criterio: FindManyOptions = { relations: ['pedidos','pedidos.pedidoProductos.producto'] };
+      const users: User[] = await this.userRepository.find(criterio);
       if (users) return users;
       throw new NotFoundException('No se encontraron usuarios en la base de datos');
     } catch (error) {
@@ -49,7 +42,7 @@ export class UsersService {
 
   async findOne(id: number): Promise<User> {
     try {
-      let criterio: FindOneOptions = { relations: [''], where: { id: id } };
+      let criterio: FindOneOptions = { relations: ['pedidos','pedidos.pedidosProductos.producto'], where: { id: id } };
       const users = await this.userRepository.findOne(criterio);
       if (users) return users;
       throw new NotFoundException(`No se encontró el usuario con id ${id}`);

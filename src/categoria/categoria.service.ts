@@ -47,7 +47,8 @@ export class CategoriaService {
       if (categoriaExistente) {
         throw new ConflictException(`La categoría con nombre: ${datos.name} ya existe`)
       }
-      const nuevaCategoria: Categoria = await this.categoriaRepository.save(new Categoria(datos.name, datos.descripcion))
+      const nuevaCategoria: Categoria = await this.categoriaRepository.save
+      (new Categoria(datos.name, datos.descripcion))
       if (nuevaCategoria) return nuevaCategoria;
       throw new NotFoundException(`No se pudo crear la categoría ${datos.name}`)
     } catch (error) {

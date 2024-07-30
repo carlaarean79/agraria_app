@@ -11,8 +11,8 @@ export class UploadService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async uploadImage(imagen: Express.Multer.File): Promise<string> {
-    const imagePath = imagen.path;
+  async uploadImage(image: Express.Multer.File): Promise<string> {
+    const imagePath = image.path;
     const imageData = fs.readFileSync(imagePath);
     const base64Image = imageData.toString('base64');
 
