@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query } from "@nestjs/common";
 import { ImagenService } from "./imagen.service";
 import { Image } from "./entities/imagen.entity";
 import { ImagenDto } from "./dto/imagenDto.dto";
@@ -9,9 +9,13 @@ export class ImagenController {
 
     @Get()
     @HttpCode(200)
-    async getPedido() {
+    async getPedido(@Query('categoria') categoria: string) {
+      if (categoria) {
+        return this.imagenService.getImagenesPorCategoria(categoria);
+      }
       return this.imagenService.getImagen();
     }
+    
   
     @Get(':id')
     @HttpCode(200)
@@ -23,7 +27,11 @@ export class ImagenController {
   
     @Post()
     @HttpCode(201)
-   async createPedido(@Body() datos: ImagenDto):Promise<Image> {
+   async createImagen(@Body() datos: ImagenDto):Promise<Image> {
       return await this.imagenService.createImagen(datos);
     }
+
+   
 }
+
+

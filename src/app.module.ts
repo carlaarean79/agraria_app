@@ -40,6 +40,8 @@ import { ImagenModule } from './imagen/imagen.module';
         ssl: true,
         entities: [Entorno, User, Producto, Pedido, PedidoProducto, Categoria,Image],//__dirname + "/entity/*{.js,.ts}"
         synchronize: true,
+        retryAttempts: 10, // Número de intentos de reconexión
+      retryDelay: 3000, 
       }),
       inject: [ConfigService],
     }),

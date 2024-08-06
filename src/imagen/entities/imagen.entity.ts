@@ -8,11 +8,15 @@ export class Image {
   @Column({nullable:true})
   name: string;
 
+  @Column({nullable:true})
+  categoria: string;
+
   @Column()
   url: string;
 
-  constructor(name: string, url: string) {
+  constructor(name: string,categoria:string, url: string) {
     this.name = name;
     this.url = url;
+    this.categoria = categoria;
   }
 }

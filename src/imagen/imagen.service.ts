@@ -13,7 +13,7 @@ export class ImagenService {
             if (imagenExistente) {
               throw new ConflictException(`La imagen con nombre: ${datos.name} ya existe`)
             }
-            const nuevaImagen: Image = await this.imageRepository.save(new Image(datos.name, datos.url))
+            const nuevaImagen: Image = await this.imageRepository.save(new Image(datos.name,datos.categoria, datos.url))
             if (nuevaImagen) return nuevaImagen;
             throw new NotFoundException(`No se pudo crear la Imagen ${datos.name}`)
           } catch (error) {
@@ -27,23 +27,28 @@ export class ImagenService {
 
    async  getImagenById(id: number): Promise<Image> {
        try {
-      const criterio: FindOneOptions = { relations: [''], where : {id:id}};
+      const criterio: FindOneOptions = { where : {id:id}};
       const image: Image = await this.imageRepository.findOne(criterio);
       if (image) return image;
       throw new NotFoundException('No se registraron coincidencias para su búsqueda');
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
-        error: `Error al intentar leer los entornos en la base de datos;${error} `
+        error: `Error al intentar leer las imagenes en la base de datos;${error} `
       },
         HttpStatus.NOT_FOUND
       )
     }
     }
+
+    async getImagenesPorCategoria(categoria: string): Promise<Image[]> {
+      return await this.imageRepository.find({ where: { categoria } });
+    }
+
    async getImagen(): Promise<Image[]> {
     try {
-        const criterio: FindManyOptions = { relations: ['productos'] };
-        const image: Image[] = await this.imageRepository.find(criterio);
+        
+        const image: Image[] = await this.imageRepository.find();
         if (image) return image;
         throw new NotFoundException('No se registraron coincidencias para su búsqueda');
       } catch (error) {

@@ -5,5 +5,8 @@ export class ImagenDto {
     name:string;
     
     @IsString()
+    categoria:string;
+    
+    @IsString()
     url: string;
 }
