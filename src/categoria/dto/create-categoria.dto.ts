@@ -6,4 +6,5 @@ export class CreateCategoriaDto {
 
     @IsString()
     descripcion:string;
+    
 }

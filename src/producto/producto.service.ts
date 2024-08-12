@@ -1,27 +1,71 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { ProductoDto } from './dto/create-producto.dto';
 import { Producto } from './entities/producto.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
+
 @Injectable()
 export class ProductoService {
     constructor(@InjectRepository(Producto) private readonly productoRepository: Repository<Producto>) {}
 
-    async create(datos: ProductoDto): Promise<Producto> {
+    /* async create(datos: ProductoDto): Promise<Producto> {
+        console.log(datos);
         try {
+            
+            // Crear el nuevo producto usando los datos proporcionados en el DTO
+            const nuevoProducto = this.productoRepository.create({
+                name: datos.name,
+                descripcion: datos.descripcion,
+                imagen: datos.imagen,
+                price: datos.price,
+                categoria: datos.categoria,
+                entorno: datos.entorno,
+                
+            });
+            console.log(datos.categoria);
+    console.log(nuevoProducto);
+    
+          // Guardar el nuevo producto en la base de datos
+          const productoGuardado = await this.productoRepository.save(nuevoProducto);
+    
+          return productoGuardado;
+        } catch (error) {
+          throw new HttpException({
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: `Error al intentar crear el producto de nombre ${datos.name} en la base de datos; ${error.message}`,
+          }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      } */
+      async create(datos:ProductoDto): Promise <Producto> {
+        try {
+           
             const nuevoProducto: Producto = await this.productoRepository.save(new Producto(
-                datos.name, datos.descripcion, datos.imagen, datos.price, datos.categoria, datos.entorno
-            ));
-            if (nuevoProducto) return nuevoProducto;
+                 datos.name, datos.descripcion, datos.imagen,datos.price, datos.categoria, datos.entorno));
+            if (nuevoProducto) return nuevoProducto; 
+            console.log(nuevoProducto);
+                       
             throw new NotFoundException(`No se pudo crear el producto con nombre ${datos.name}`);
         } catch (error) {
-            throw new HttpException({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                error: `Error al intentar crear el producto de nombre ${datos.name} en la base de datos; ${error}`,
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
+            if (error instanceof HttpException) {
+                // Si el error es de tipo HttpException, simplemente relanzamos el error
+                throw error;
+            } else if (error instanceof ConflictException) {
+                // Si el error es de tipo ConflictException, lanzamos una excepción HTTP con el mismo mensaje
+                throw new HttpException({
+                    status: HttpStatus.CONFLICT,
+                    error: error.message,
+                }, HttpStatus.CONFLICT);
+            } else {
+                // En caso de cualquier otro error, lanzamos una excepción HTTP genérica
+                throw new HttpException({
+                    status: HttpStatus.INTERNAL_SERVER_ERROR,
+                    error: `Error al intentar crear el producto de nombre ${datos.name} en la base de datos; ${error}`,
+                }, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
+    
 
     async findAll(): Promise<Producto[]> {
         try {
