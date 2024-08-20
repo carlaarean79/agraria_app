@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { Role } from "src/auth/role.enum";
 export class UserDto {
     @IsNotEmpty()
     @IsString()
@@ -8,11 +9,23 @@ export class UserDto {
     @IsString()
     lastname: string;
     
+    @IsOptional()
     @IsNotEmpty()
-    @IsNumber()
-    telphone:number;
+    @IsString()
+    telphone:string;
 
+    @IsOptional()
     @IsNotEmpty()
     @IsEmail()
     email:string
+
+    @IsOptional()
+    @IsString()
+    password:string;
+
+    @IsOptional()
+    @IsString()
+    role?: Role;
+
+
 }

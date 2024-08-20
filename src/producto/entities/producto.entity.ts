@@ -11,7 +11,7 @@ export class Producto {
     @Column({ length: 40 })
     name: string;
 
-    @Column({ length: 250 })
+    @Column({ length: 250, nullable: true })
     descripcion: string;
 
     @Column({ type: 'varchar' })
@@ -19,6 +19,9 @@ export class Producto {
 
     @Column()
     price: number;
+
+    @Column({ nullable: true })
+    detalle: string;
 
     @ManyToOne(() => Categoria, categoria => categoria.productos)
     @JoinColumn({ name: "categoria_id" })
@@ -28,14 +31,15 @@ export class Producto {
     @JoinColumn({ name: "entorno_id" })
     entorno: Entorno;
 
-    @OneToMany(() => PedidoProducto, pedProd => pedProd.producto)
-    pedidoProductos: PedidoProducto[];
+    @OneToMany(() => PedidoProducto, pedidoProducto => pedidoProducto.producto)
+    pedidosProductos: PedidoProducto[];
 
-    constructor(name: string, descripcion: string, imagen: string, price: number, categoria: Categoria, entorno: Entorno) {
+    constructor(name: string, descripcion: string, imagen: string, price: number, detalle: string, categoria: Categoria, entorno: Entorno) {
         this.name = name;
         this.descripcion = descripcion;
         this.imagen = imagen;
         this.price = price;
+        this.detalle = detalle;
         this.categoria = categoria;
         this.entorno = entorno;
     }

@@ -15,11 +15,13 @@ import { Producto } from './producto/entities/producto.entity';
 import { EntornoModule } from './entorno/entorno.module';
 import { Entorno } from './entorno/entities/entorno.entity';
 import { UploadModule } from './upload/upload.module';
-import { NodemailerModule } from './nodemailer/nodemailer.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WhatsappSendModule } from './whatsapp-send/whatsapp-send.module';
 import { Image } from './imagen/entities/imagen.entity';
 import { ImagenModule } from './imagen/imagen.module';
+import { EmailModule } from './email/email.module';
+import { AuthModule } from './auth/auth.module';
+
 
 
 
@@ -49,7 +51,7 @@ import { ImagenModule } from './imagen/imagen.module';
     UsersModule, CategoriaModule,
      ProductoModule, PedidoModule, 
      PedidoProductoModule, EntornoModule, 
-     UploadModule, NodemailerModule, WhatsappSendModule, ImagenModule
+     UploadModule, WhatsappSendModule, ImagenModule,  EmailModule, AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,6 +6,9 @@ import { Entorno } from "src/entorno/entities/entorno.entity";
 export class ProductoDto {
     @IsString()
     name: string;
+
+    @IsString()
+    detalle:string;
     
     @IsString()
     descripcion: string;

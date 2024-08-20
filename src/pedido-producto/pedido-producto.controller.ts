@@ -35,6 +35,6 @@ async  findOnePedidoProducto(@Param('id',new ParseIntPipe({errorHttpStatusCode:H
   @Delete(':id')
   async removePedidoProducto(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})
 ) id: number,datos:PedidoProducto):Promise<string> {
-    return this.pedidoProductoService.remove(id, datos);
+    return this.pedidoProductoService.remove(id);
 }
 }

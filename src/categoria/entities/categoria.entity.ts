@@ -9,7 +9,7 @@ export class Categoria {
     @Column()
     name:string
 
-    @Column()
+    @Column({nullable:true})
     descripcion:string
 
     @OneToMany(()=> Producto, producto => producto.categoria)
