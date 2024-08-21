@@ -34,7 +34,7 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     try {
-      const criterio: FindManyOptions = { relations: [ 'pedidos','pedidos.pedidosProductos','pedidos.pedidProducto.producto' ] };
+      const criterio: FindManyOptions = { relations: [ 'pedidos','pedidos.pedidProducto.producto' ] };
       const users: User[] = await this.userRepository.find(criterio);
       if (users) return users;
       throw new NotFoundException('No se encontraron usuarios en la base de datos');
@@ -48,23 +48,25 @@ export class UsersService {
 
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(idUser: number): Promise<User> {
+    if(idUser)
     try {
-      let criterio: FindOneOptions = { relations: ['pedidos','pedidos.pedidosProductos','pedidos.pedidProducto.producto'], where: { id: id } };
+      let criterio: FindOneOptions = { relations: ['pedidos','pedidos.pedidProducto.producto'],
+         where: { id: idUser } };
       const users = await this.userRepository.findOne(criterio);
       if (users) return users;
-      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+      throw new NotFoundException(`No se encontró el usuario con id ${idUser}`);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.NOT_FOUND,
-        error: `Error al intentar obtener el usuario con id ${id}: ${error}`,
+        error: `Error al intentar obtener el usuario con id ${idUser}: ${error}`,
       }, HttpStatus.NOT_FOUND);
     }
   }
 
   async findUserByEmail(email:string){
 try{
-  let criterio: FindOneOptions = { relations: ['pedidos','pedidos.pedidosProductos','pedidos.pedidProducto.producto'], where: { email: email } };
+  let criterio: FindOneOptions = { where: { email: email } };
   const users = await this.userRepository.findOne(criterio);
   if (users) return users;
   throw new NotFoundException(`No se encontró el usuario con id ${email}`);

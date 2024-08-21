@@ -10,7 +10,7 @@ export class PedidoProducto {
     @Column()
     cantidad: number;
 
-    @ManyToOne(() => Producto, producto => producto.pedidosProductos)
+    @ManyToOne(() => Producto, producto => producto.pedidoProducto)
     producto: Producto;
 
     @ManyToOne(() => Pedido, pedido => pedido.pedidProducto)

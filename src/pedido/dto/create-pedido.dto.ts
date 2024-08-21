@@ -13,5 +13,6 @@ export class CreatePedidoDto {
   detalle: string;
 
   @IsNotEmpty()
+  @Type(()=> User)
   user: User;
 }

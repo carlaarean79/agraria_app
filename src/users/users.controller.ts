@@ -15,22 +15,18 @@ export class UsersController {
   }
 
   @Get()
-  /* @UseGuards(AdminGuard) */
+  @UseGuards(AdminGuard) 
   @HttpCode(200)
   async findAll():Promise<User[]> {
     return  await this.usersService.findAll();
   } 
 
   @Get(':id')
-
+  @UseGuards(AdminGuard) 
   @HttpCode(200)
  async findOne(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
    )) id: number):Promise<User>{
-  
-   
       return  await this.usersService.findOne(id);
-   
-    
   } 
 
   @Put(':id')
@@ -40,6 +36,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminGuard) 
   @HttpCode(200)
  async  remove(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
   )) id: number) {

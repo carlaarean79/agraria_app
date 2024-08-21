@@ -32,7 +32,7 @@ export class Producto {
     entorno: Entorno;
 
     @OneToMany(() => PedidoProducto, pedidoProducto => pedidoProducto.producto)
-    pedidosProductos: PedidoProducto[];
+    pedidoProducto: PedidoProducto[];
 
     constructor(name: string, descripcion: string, imagen: string, price: number, detalle: string, categoria: Categoria, entorno: Entorno) {
         this.name = name;

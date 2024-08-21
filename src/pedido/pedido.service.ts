@@ -4,17 +4,23 @@ import { Pedido } from './entities/pedido.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindManyOptions, FindOneOptions } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PedidoService {
   constructor(
     @InjectRepository(Pedido) private readonly pedidoRepository: Repository<Pedido>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly userService: UsersService
   ) {}
 
   async createPedido(datos: CreatePedidoDto): Promise<Pedido> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: datos.user.id } });
+      
+      const user: User = await this.userService.findOne(datos.user.id );
+      console.log(datos.user.id);
+      console.log(user);
+      
       if (!user) {
         throw new HttpException(
           {
@@ -26,7 +32,11 @@ export class PedidoService {
       }
   
       const nuevoPedido: Pedido = new Pedido(datos.fecha, datos.detalle, user);
+      console.log(nuevoPedido + "nuevo pedido");
+      
+      
       const saveNewPedido: Pedido = await this.pedidoRepository.save(nuevoPedido);
+      console.log("pedido guardado" + saveNewPedido);
       return saveNewPedido;
     } catch (error) {
       throw new HttpException(
@@ -41,7 +51,7 @@ export class PedidoService {
   
   async getPedido(): Promise<Pedido[]> {
     try {
-      const criterio: FindManyOptions = { relations: ['pedidosProductos', 'pedidProducto.producto', 'user'] };
+      const criterio: FindManyOptions = { relations: ['pedidoProducto', 'pedidProducto.producto', 'user'] };
       const pedido: Pedido[] = await this.pedidoRepository.find(criterio);
       if (pedido) return pedido;
       throw new NotFoundException('No se registraron coincidencias para su búsqueda');
@@ -56,7 +66,7 @@ export class PedidoService {
 
   async getPedidoById(id: number): Promise<Pedido> {
     try {
-      const criterio: FindOneOptions = { relations: ['pedidosProductos', 'pedidProducto.producto', 'user'], where: { id } };
+      const criterio: FindOneOptions = { relations: ['pedidoProducto', 'pedidProducto.producto', 'user'], where: { id } };
       const pedido: Pedido = await this.pedidoRepository.findOne(criterio);
       if (pedido) return pedido;
       throw new NotFoundException(`El pedido con id: ${id} no existe en la base de datos`);

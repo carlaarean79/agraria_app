@@ -25,6 +25,8 @@ export class PedidoController {
   @Post()
   @HttpCode(201)
  async createPedido(@Body() datos: CreatePedidoDto):Promise<Pedido> {
+  console.log(datos);
+  
     return await this.pedidoService.createPedido(datos);
   }
 

@@ -38,7 +38,7 @@ export class PedidoProductoService {
 
   async findAll(): Promise<PedidoProducto[]> {
     try {
-      const criterio = { relations: ['pedido', 'producto', 'pedido.user'] };
+      const criterio = { relations: ['pedidos', 'producto', 'pedidos.user'] };
       const pedidoProduc = await this.pediProdRepository.find(criterio);
       if (pedidoProduc.length === 0) {
         throw new NotFoundException('No se encontraron pedidos de productos en la base de datos');
@@ -54,7 +54,7 @@ export class PedidoProductoService {
 
   async findOne(id: number): Promise<PedidoProducto> {
     try {
-      const criterio = { relations: ['pedido', 'producto', 'pedido.user'], where: { id: id } };
+      const criterio = { relations: ['pedidos', 'producto', 'pedidos.user'], where: { id: id } };
       const producto = await this.pediProdRepository.findOne(criterio);
       if (!producto) {
         throw new NotFoundException(`No se encontró el PedidoProducto con id ${id}`);

@@ -9,6 +9,7 @@ import { Pedido } from 'src/pedido/entities/pedido.entity';
 @Module({
   imports:[TypeOrmModule.forFeature([User, Pedido]), AuthModule],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService]
 })
 export class UsersModule {}
