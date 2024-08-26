@@ -3,6 +3,8 @@ import { UsersService } from './users.service';
 import { UserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { AdminGuard } from 'src/auth/RolesGuards/AdminGuard';
+import { AuthGuard } from 'src/auth/RolesGuards/auth.guard';
+import { RequestLoginDto } from './dto/RequestLoginDto.dto';
 
 @Controller('users')
 export class UsersController {
@@ -15,18 +17,22 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(AdminGuard) 
+  /* @UseGuards(AdminGuard)  */
   @HttpCode(200)
   async findAll():Promise<User[]> {
     return  await this.usersService.findAll();
   } 
 
   @Get(':id')
-  @UseGuards(AdminGuard) 
+  @UseGuards(AuthGuard) 
   @HttpCode(200)
- async findOne(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
+ async findOne(@Request() req: Request & {user:RequestLoginDto},@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
    )) id: number):Promise<User>{
+    const usuario = req.user;
+    if(usuario && usuario.role == 'admin' || usuario && id === usuario.sub){
       return  await this.usersService.findOne(id);
+
+    }
   } 
 
   @Put(':id')
