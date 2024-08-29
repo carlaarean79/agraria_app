@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductoDto } from './dto/create-producto.dto';
 import { Producto } from './entities/producto.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,32 +10,21 @@ export class ProductoService {
 
   async create(datos: ProductoDto): Promise<Producto> {
     try {
-      // Crear el nuevo producto usando el método create de la repository
       const nuevoProducto = this.productoRepository.create({
-        name: datos.name,
-        descripcion: datos.descripcion,
-        imagen: datos.imagen,
-        price: datos.price,
-        detalle: datos.detalle,
-        categoria: datos.categoria,
-        entorno: datos.entorno,
+        ...datos,
+        stock: datos.stock || 0, // Asegurarse de establecer un valor predeterminado para el stock
       });
 
-      // Guardar el nuevo producto en la base de datos
       const productoGuardado = await this.productoRepository.save(nuevoProducto);
       if (!productoGuardado) {
         throw new NotFoundException(`No se pudo crear el producto con nombre ${datos.name}`);
       }
       return productoGuardado;
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        throw new HttpException({
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Error al intentar crear el producto de nombre ${datos.name} en la base de datos; ${error.message}`,
-        }, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: `Error al intentar crear el producto: ${error.message}`,
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -77,13 +66,8 @@ export class ProductoService {
       if (!producto) {
         throw new NotFoundException(`No se encontró el producto con id ${id}`);
       }
-      producto.name = datos.name;
-      producto.descripcion = datos.descripcion;
-      producto.imagen = datos.imagen;
-      producto.price = datos.price;
-      producto.detalle = datos.detalle;
-      producto.categoria = datos.categoria;
-      producto.entorno = datos.entorno;
+
+      producto = { ...producto, ...datos };
 
       return await this.productoRepository.save(producto);
     } catch (error) {
@@ -106,6 +90,27 @@ export class ProductoService {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         error: `Error al intentar eliminar el producto con id ${id}: ${error.message}`,
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateStock(id: number, stock: number): Promise<Producto> {
+    try {
+      const producto = await this.findOne(id);
+      if (!producto) {
+        throw new NotFoundException(`No se encontró el producto con id ${id}`);
+      }
+
+      if (stock < 0) {
+        throw new BadRequestException('El stock no puede ser negativo');
+      }
+
+      producto.stock = stock;
+      return await this.productoRepository.save(producto);
+    } catch (error) {
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: `Error al intentar actualizar el stock del producto con id ${id}: ${error.message}`,
       }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

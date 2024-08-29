@@ -23,6 +23,9 @@ export class Producto {
     @Column({ nullable: true })
     detalle: string;
 
+    @Column({ default: 0 })
+    stock: number;
+
     @ManyToOne(() => Categoria, categoria => categoria.productos)
     @JoinColumn({ name: "categoria_id" })
     categoria: Categoria;
