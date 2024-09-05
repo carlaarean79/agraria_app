@@ -1,31 +1,28 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { Role } from "src/auth/role.enum";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Role } from 'src/auth/role.enum';
+
 export class UserDto {
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-    @IsNotEmpty()
-    @IsString()
-    lastname: string;
-    
-    @IsOptional()
-    @IsNotEmpty()
-    @IsString()
-    telphone:string;
+  @IsNotEmpty()
+  @IsString()
+  lastname: string;
 
-    @IsOptional()
-    @IsNotEmpty()
-    @IsEmail()
-    email:string
+  @IsOptional()
+  @IsString()
+  telphone?: string; // Hacerlo opcional
 
-    @IsOptional()
-    @IsString()
-    password:string;
+  @IsOptional()
+  @IsEmail()
+  email?: string; // Hacerlo opcional
 
-    @IsOptional()
-    @IsString()
-    role?: Role;
+  @IsOptional()
+  @IsString()
+  password?: string; // Hacerlo opcional
 
-
+  @IsOptional()
+  @IsString()
+  role?: Role; // Hacerlo opcional
 }

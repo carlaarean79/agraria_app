@@ -1,6 +1,7 @@
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
+import { PedidoProductoDto } from 'src/pedido-producto/dto/create-pedido-producto.dto';
 
 export class CreatePedidoDto {
   @IsDate()
@@ -15,4 +16,8 @@ export class CreatePedidoDto {
   @IsNotEmpty()
   @Type(()=> User)
   user: User;
+  
+  @IsNotEmpty()
+  @Type(() => PedidoProductoDto)
+  pedidoProducto: PedidoProductoDto[];
 }

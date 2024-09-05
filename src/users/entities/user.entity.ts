@@ -1,3 +1,4 @@
+import { IsOptional } from "class-validator";
 import { Role } from "src/auth/role.enum";
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -23,7 +24,8 @@ export class User {
     password: string;
 
     @Column({ nullable: true })
-    messaje: string;
+    @IsOptional()
+    messaje?: string;
 
     @Column({ type: 'enum', enum: Role, default: Role.User })
     role: Role;

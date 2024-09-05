@@ -12,5 +12,6 @@ import { Entorno } from 'src/entorno/entities/entorno.entity';
     ],
     controllers: [ProductoController],
     providers: [ProductoService],
+   
 })
 export class ProductoModule {}

@@ -7,9 +7,7 @@ async function bootstrap() {
 
   // Configuración de CORS para permitir el origen del frontend
   app.enableCors({
-    origin: 'http://localhost:5173', // Asegúrate de usar el puerto correcto de tu frontend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true, // Si necesitas enviar cookies u otros encabezados de autenticación
+    origin: '*'
   });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

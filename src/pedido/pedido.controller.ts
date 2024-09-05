@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, ParseIntPipe, HttpStatus, Put, BadRequestException } from '@nestjs/common';
 import { PedidoService } from './pedido.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Pedido } from './entities/pedido.entity';
@@ -38,9 +38,10 @@ export class PedidoController {
    }
 
 
-  @Delete(':id')
-  async removePedido(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE}
-     )) id: number):Promise<Boolean> {
-    return await this.pedidoService.removePedido(id);
-  }
+   @Delete(':id')
+   async deletePedido(@Param('id', new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE})
+  ) id: number) : Promise<boolean>{
+  
+     return this.pedidoService.removePedido(id);
+   }
 }
